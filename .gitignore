@@ -1,3 +1,5 @@
 *.csv
 *.exe
 *.jpg
+.vscode
+__pycache__
