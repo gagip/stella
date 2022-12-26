@@ -6,9 +6,11 @@ import pandas as pd
 import requests
 import webbrowser
 
+from utils import *
+
 #UI파일 연결
 #단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
-form_class = uic.loadUiType("crawling_result.ui")[0]
+form_class = uic.loadUiType(resource_path("crawling_result.ui"))[0]
 
 
 #화면을 띄우는데 사용되는 Class 선언
@@ -20,6 +22,7 @@ class WindowClass(QMainWindow, form_class):
         super().__init__()
         self.setupUi(self)
 
+        self.linkButton.clicked.connect(self.open_link)
         self.prevButton.clicked.connect(self.prev)
         self.nextButton.clicked.connect(self.next)
 
@@ -40,8 +43,6 @@ class WindowClass(QMainWindow, form_class):
         
         self.imageLabel: QLabel
         self.imageLabel.setPixmap(self.load_image_from_url(row['image']))
-
-        self.linkButton.clicked.connect(lambda: webbrowser.open(row['link']))
     
     def prev(self):
         if self.index == 0:
@@ -54,6 +55,9 @@ class WindowClass(QMainWindow, form_class):
             return
         self.index += 1
         self.show_info(self.index)
+    
+    def open_link(self):
+        webbrowser.open(self.data.loc[self.index]['link'])
         
     def load_image_from_url(self, url):
         pixmap = QPixmap()
