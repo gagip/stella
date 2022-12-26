@@ -3,3 +3,6 @@
 *.jpg
 .vscode
 __pycache__
+build
+dist
+*.spec
