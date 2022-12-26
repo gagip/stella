@@ -33,15 +33,14 @@ class CrawlingManager():
                 products_size = len(products)
 
                 for idx, product in enumerate(products):
-                    print(f'페이지#{page} {idx+1}/{products_size}')
-
-                    link = self.__get_link(product)
                     title = self.__get_title(product)
+                    link = self.__get_link(product)
                     product_name = ' '.join(title.split()[:-2])
                     product_num = title.split()[-1]
                     regular_price = self.__get_regular_price(product)
                     sale_price = self.__get_sale_price(product)
                     image = self.__get_image(product)
+                    print(f'페이지#{page} {idx+1}/{products_size}: {title}')
 
                     # 상품 세부 항목으로 이동
                     detail_soup = self.__move_to(link, wait_time=3)
