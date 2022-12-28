@@ -1,2 +1,2 @@
 pyinstaller -F main.py
-pyinstaller -w -F --add-data="crawling_result.ui;./" result.py
+pyinstaller -F --add-data="crawling_result.ui;./" result.py --hidden-import plyer.platforms.win.notification

@@ -5,26 +5,33 @@ from PyQt5.QtGui import *
 import pandas as pd
 import requests
 import webbrowser
+import clipboard
+from plyer import notification
 
 from utils import *
 
-#UI파일 연결
+#UI파일 연결6i8.
 #단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
 form_class = uic.loadUiType(resource_path("crawling_result.ui"))[0]
+
+default_file_name = '6i7'
 
 
 #화면을 띄우는데 사용되는 Class 선언
 class WindowClass(QMainWindow, form_class):
     
-    def __init__(self) :
+    def __init__(self, file_name) :
         self.index = 0
-        self.data = pd.read_csv('6i7.csv')
+        self.data = pd.read_csv(f'{file_name}.csv')
         super().__init__()
         self.setupUi(self)
 
         self.linkButton.clicked.connect(self.open_link)
         self.prevButton.clicked.connect(self.prev)
         self.nextButton.clicked.connect(self.next)
+        self.imageIinkButton1.clicked.connect(self.copyImageLink1)
+        self.imageIinkButton2.clicked.connect(self.copyImageLink2)
+        self.imageIinkButton3.clicked.connect(self.copyImageLink3)
 
         self.show_info(self.index)
         
@@ -63,13 +70,39 @@ class WindowClass(QMainWindow, form_class):
         pixmap = QPixmap()
         pixmap.loadFromData(requests.get(url).content)
         return pixmap
+    
+    def copyImageLink1(self):
+        clipboard.copy(self.data.loc[self.index]['image'])
+        notification.notify(
+            title = '이미지1 링크 복사 성공',
+            message = '링크를 복사했습니다. ctrl+v로 붙여넣기 가능합니다.',
+        )
+        
+    def copyImageLink2(self):
+        detail_image = self.data.loc[self.index]['detail_image']
+        clipboard.copy(detail_image.split(',')[0])
+        notification.notify(
+            title = '이미지2 링크 복사 성공',
+            message = '링크를 복사했습니다. ctrl+v로 붙여넣기 가능합니다.',
+        )
+        
+    def copyImageLink3(self):
+        detail_image = self.data.loc[self.index]['detail_image']
+        clipboard.copy(detail_image.split(',')[1])
+        notification.notify(
+            title = '이미지3 링크 복사 성공',
+            message = '링크를 복사했습니다. ctrl+v로 붙여넣기 가능합니다.',
+        )
 
 if __name__ == "__main__" :
+    use_file_name = input(f'엑셀 파일 이름 (default: {default_file_name}): ')
+    file_name = use_file_name if use_file_name else default_file_name
+        
     #QApplication : 프로그램을 실행시켜주는 클래스
     app = QApplication(sys.argv) 
 
     #WindowClass의 인스턴스 생성
-    myWindow = WindowClass() 
+    myWindow = WindowClass(file_name) 
 
     #프로그램 화면을 보여주는 코드
     myWindow.show()

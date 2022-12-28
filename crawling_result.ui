@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>717</width>
-    <height>622</height>
+    <width>699</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,26 +32,13 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPushButton" name="linkButton">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>510</y>
-     <width>221</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>상품 사이트로 이동</string>
-   </property>
-  </widget>
   <widget class="QWidget" name="formLayoutWidget">
    <property name="geometry">
     <rect>
      <x>30</x>
      <y>30</y>
      <width>316</width>
-     <height>494</height>
+     <height>561</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="formLayout">
@@ -177,7 +164,7 @@
    <property name="geometry">
     <rect>
      <x>220</x>
-     <y>570</y>
+     <y>620</y>
      <width>256</width>
      <height>25</height>
     </rect>
@@ -207,6 +194,46 @@
      <widget class="QPushButton" name="nextButton">
       <property name="text">
        <string>다음</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>380</x>
+     <y>490</y>
+     <width>281</width>
+     <height>112</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="linkButton">
+      <property name="text">
+       <string>상품 사이트로 이동</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="imageIinkButton1">
+      <property name="text">
+       <string>이미지1 링크</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="imageIinkButton2">
+      <property name="text">
+       <string>이미지2 링크</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="imageIinkButton3">
+      <property name="text">
+       <string>이미지3 링크</string>
       </property>
      </widget>
     </item>
