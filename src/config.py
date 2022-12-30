@@ -1,11 +1,7 @@
-import os
-
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-
-base_url = 'https://www.dlm1947.com'
-default_search_keyword = '6i7'
-default_start_page = 1
-default_end_page = 5
+BASE_URL = 'https://www.dlm1947.com'
+DEFAULT_SEARCH_KEYWORD = '6i7'
+DEFAULT_START_PAGE = 1
+DEFAULT_END_PAGE = 5
 
 KEY_TITLE = 'title'
 KEY_LINK = 'link'

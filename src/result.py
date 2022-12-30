@@ -15,8 +15,6 @@ from config import *
 # 단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
 form_class = uic.loadUiType(resource_path("crawling_result.ui"))[0]
 
-default_file_name = '6i7'
-
 
 # 화면을 띄우는데 사용되는 Class 선언
 class WindowClass(QMainWindow, form_class):
@@ -98,8 +96,8 @@ class WindowClass(QMainWindow, form_class):
 
 
 if __name__ == "__main__":
-    use_file_name = input(f'엑셀 파일 이름 (default: {default_file_name}): ')
-    file_name = use_file_name if use_file_name else default_file_name
+    use_file_name = input(f'엑셀 파일 이름 (default: {DEFAULT_SEARCH_KEYWORD}): ')
+    file_name = use_file_name if use_file_name else DEFAULT_SEARCH_KEYWORD
 
     # QApplication : 프로그램을 실행시켜주는 클래스
     app = QApplication(sys.argv)
