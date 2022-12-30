@@ -1,6 +1,7 @@
 altgraph==0.17.3
 async-generator==1.10
 attrs==22.1.0
+autopep8==2.0.1
 beautifulsoup4==4.11.1
 certifi==2022.12.7
 cffi==1.15.1
@@ -16,6 +17,7 @@ outcome==1.2.0
 pandas==1.5.2
 pefile==2022.5.30
 plyer==2.1.0
+pycodestyle==2.10.0
 pycparser==2.21
 pyinstaller @ https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
 pyinstaller-hooks-contrib==2022.14
