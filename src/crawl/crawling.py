@@ -51,6 +51,7 @@ class CrawlingManager():
                     self.__save_info(info)
         except Exception as e:
             print(e)
+            print('크롤링 도중 문제가 생겼습니다.')
 
         self.driver.close()
         print('크롤링 종료')

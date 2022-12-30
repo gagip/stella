@@ -42,9 +42,7 @@ class WindowClass(QMainWindow, form_class):
         self.productNumEdit.setText(row[KEY_PRODUCT_NUM])
         self.regularPriceEdit.setText(str(row[KEY_REGULAR_PRICE]))
         self.salePriceEdit.setText(str(row[KEY_SALE_PRICE]))
-        self.colorList.clear()
-        for color in row[KEY_COLORS].split(','):
-            self.colorList.addItem(color)
+        self.colorEdit.setText(row[KEY_COLORS])
         self.pageLabel.setText(f'{index+1}/{max_page}')
 
         self.imageLabel: QLabel
