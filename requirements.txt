@@ -5,6 +5,7 @@ beautifulsoup4==4.11.1
 certifi==2022.12.7
 cffi==1.15.1
 charset-normalizer==2.1.1
+clipboard==0.0.4
 exceptiongroup==1.0.4
 future==0.18.2
 h11==0.14.0
@@ -14,9 +15,11 @@ opencv-python==4.6.0.66
 outcome==1.2.0
 pandas==1.5.2
 pefile==2022.5.30
+plyer==2.1.0
 pycparser==2.21
 pyinstaller @ https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
 pyinstaller-hooks-contrib==2022.14
+pyperclip==1.8.2
 PyQt5==5.15.7
 PyQt5-Qt5==5.15.2
 PyQt5-sip==12.11.0
