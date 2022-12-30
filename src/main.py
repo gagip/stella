@@ -1,9 +1,7 @@
-from crawling import CrawlingManager
+import crawl
+from crawl.crawling import CrawlingManager
 
-base_url = 'https://www.dlm1947.com'
-default_search_keyword = '6i7'
-default_start_page = 1
-default_end_page = 5
+from config import *
 
 
 if __name__ == '__main__':
@@ -26,4 +24,4 @@ if __name__ == '__main__':
         start_page=start_page, 
         end_page=end_page
     )
-    crawlingManager.save_csv()
+    crawlingManager.save_csv(dir_name='data')

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'd:\workspace\python\stella\crawling_result.ui'
+# Form implementation generated from reading ui file 'c:\Users\gagip94\workspace\python\stella\src\crawling_result.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.7
 #
