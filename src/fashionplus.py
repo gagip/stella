@@ -1,22 +1,18 @@
 from bs4 import BeautifulSoup as bs
 import os
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.select import Select
 import pandas as pd
 import json
 import re
 import requests
+from crawl.driver import DriverManager
 from io import BytesIO
 from PIL import Image
 
 
 BASE_URL = 'https://seller.fashionplus.co.kr/login'
 
-driver_option = webdriver.ChromeOptions()
-driver_option.add_experimental_option(
-    'excludeSwitches', ['enable-logging'])
-driver = webdriver.Chrome(options=driver_option)
+
+driver = DriverManager(BASE_URL, hidden_browser_option=False)
 
 save_data = {}
 
@@ -29,15 +25,15 @@ def save(key, value):
 
 
 def login(id, password):
-    login_type = Select(driver.find_element(By.ID, 'loginType'))
+    login_type = driver.find_select_element_by_id('loginType')
     login_type.select_by_index(1)   # 브랜드 관리자로 변경
 
     # 아이디, 패스워드 입력
-    driver.find_element(By.ID, 'loginId').send_keys(id)
-    driver.find_element(By.ID, 'loginPassword').send_keys(password)
+    driver.find_element_by_id('loginId').send_keys(id)
+    driver.find_element_by_id('loginPassword').send_keys(password)
 
     # 로그인 버튼 클릭
-    driver.find_element(By.ID, 'btn_login').click()
+    driver.find_element_by_id('btn_login').click()
 
 
 def get_color(source):
@@ -82,21 +78,15 @@ def save_img(source, product_code):
 
 def start_crawling(productIDs):
     for productID in productIDs:
-        driver.get(f'https://seller.fashionplus.co.kr/goods/edit/{productID}')
-        driver.implicitly_wait(3)
+        driver.move_to(f'https://seller.fashionplus.co.kr/goods/edit/{productID}')
 
         # 요소 추출
-        product_code = driver.find_element(
-            By.ID, 'goods_code').get_attribute('value')
-        product_name = driver.find_element(
-            By.ID, 'goods_name').get_attribute('value')
-        goods_price = driver.find_element(
-            By.ID, 'goods_price').get_attribute('value')
-        goods_salesprice = driver.find_element(
-            By.ID, 'goods_salesprice').get_attribute('value')
-        goods_display_name = driver.find_element(
-            By.ID, 'goods_display_name').get_attribute('value')
-        goods_content = driver.find_element(By.ID, 'goods_content_source').text
+        product_code = driver.find_element_by_id('goods_code').get_attribute('value')
+        product_name = driver.find_element_by_id('goods_name').get_attribute('value')
+        goods_price = driver.find_element_by_id('goods_price').get_attribute('value')
+        goods_salesprice = driver.find_element_by_id('goods_salesprice').get_attribute('value')
+        goods_display_name = driver.find_element_by_id('goods_display_name').get_attribute('value')
+        goods_content = driver.find_element_by_id('goods_content_source').text
         category = get_category(driver.page_source)
         product_color = get_color(driver.page_source)
         print(product_code, product_name, goods_price, goods_salesprice,
@@ -116,39 +106,37 @@ def start_crawling(productIDs):
 
 
 def register_product(product):
-    driver.get('https://seller.fashionplus.co.kr/goods/create')
-    driver.implicitly_wait(3)
+    driver.move_to('https://seller.fashionplus.co.kr/goods/create')
 
-    Select(driver.find_element(By.ID, 'seller_id')).select_by_index(1)
-    driver.find_element(By.ID, 'goods_code').send_keys(product['상품코드'])
-    driver.find_element(By.ID, 'goods_name').send_keys(product['상품이름'])
-    driver.find_element(By.ID, 'goods_price').send_keys(str(product['소비자단가']))
-    driver.find_element(By.ID, 'goods_salesprice').send_keys(
+    driver.find_select_element_by_id('seller_id').select_by_index(1)
+    driver.find_element_by_id('goods_code').send_keys(product['상품코드'])
+    driver.find_element_by_id('goods_name').send_keys(product['상품이름'])
+    driver.find_element_by_id('goods_price').send_keys(str(product['소비자단가']))
+    driver.find_element_by_id('goods_salesprice').send_keys(
         str(product['판매가']))
-    driver.find_element(By.ID, 'goods_display_name').send_keys(
+    driver.find_element_by_id('goods_display_name').send_keys(
         product['진열상품명'])
-    driver.find_element(
-        By.ID, 'goods_content_source').send_keys(product['상세설명'])
-    driver.find_element(By.ID, 'option1_concat').send_keys(product['색깔'])
+    driver.find_element_by_id('goods_content_source').send_keys(product['상세설명'])
+    driver.find_element_by_id('option1_concat').send_keys(product['색깔'])
     try:
         for category in product['카테고리'].split(','):
             category1, category2, category3 = category.split('>')
-            category1_btns = driver.find_elements(By.CLASS_NAME, 'category1_btn')
+            category1_btns = driver.find_elements_by_class('category1_btn')
             for btn in category1_btns:
                 text = btn.get_attribute('innerText')
                 if text == category1.strip():
                     btn.click()
-            category2_btns = driver.find_elements(By.CLASS_NAME, 'category2_btn')
+            category2_btns = driver.find_elements_by_class('category2_btn')
             for btn in category2_btns:
                 text = btn.get_attribute('innerText')
                 if text == category2.strip():
                     btn.click()
-            category3_btns = driver.find_elements(By.CLASS_NAME, 'category3_btn')
+            category3_btns = driver.find_elements_by_class('category3_btn')
             for btn in category3_btns:
                 text = btn.get_attribute('innerText')
                 if text == category3.strip():
                     btn.click()
-            driver.find_element(By.CLASS_NAME, 'btn_add').click()
+            driver.find_element_by_class('btn_add').click()
     except:
         pass
 

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import os
-from selenium import webdriver
 import pandas as pd
+from driver import DriverManager
 
 from utils import *
 from config import *
@@ -13,14 +13,7 @@ class CrawlingManager():
     """
 
     def __init__(self, base_url: str, search_keyword: str, hidden_browser_option: bool):
-        self.options = webdriver.ChromeOptions()
-        self.options.add_experimental_option(
-            'excludeSwitches', ['enable-logging'])
-        # 창 숨기는 옵션
-        if hidden_browser_option:
-            self.options.add_argument("headless")
-        self.driver = webdriver.Chrome(options=self.options)
-        self.driver.set_window_size(1920, 1080)
+        self.driver = DriverManager(base_url, hidden_browser_option=hidden_browser_option)
         self.base_url = base_url
         self.search_keyword = search_keyword
         self.data = {}
@@ -103,8 +96,7 @@ class CrawlingManager():
         self.data[key].append(value)
 
     def __move_to(self, url, wait_time=5) -> bs:
-        self.driver.get(url)
-        self.driver.implicitly_wait(wait_time)
+        self.driver.move_to(url, wait_time=wait_time)
         return bs(self.driver.page_source, features='html.parser')
 
     def __get_link(self, product):
