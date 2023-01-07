@@ -8,6 +8,8 @@ from crawl.driver import DriverManager
 from io import BytesIO
 from PIL import Image
 
+from config import *
+
 
 BASE_URL = 'https://seller.fashionplus.co.kr/login'
 
@@ -15,6 +17,7 @@ BASE_URL = 'https://seller.fashionplus.co.kr/login'
 driver = DriverManager(BASE_URL, hidden_browser_option=False)
 
 save_data = {}
+
 
 
 def save(key, value):
@@ -91,6 +94,8 @@ def start_crawling(productIDs):
         product_color = get_color(driver.page_source)
         print(product_code, product_name, goods_price, goods_salesprice,
               goods_display_name, product_name, goods_content, product_color, category)
+
+
         with open('source.txt', 'w') as f:
             f.write(driver.page_source)
         save_img(driver.page_source, product_code)
@@ -105,12 +110,17 @@ def start_crawling(productIDs):
         save('카테고리', category)
 
 
-def register_product(product):
+def register_product(product, code_prefix: str = ''):
     driver.move_to('https://seller.fashionplus.co.kr/goods/create')
 
     driver.find_select_element_by_id('seller_id').select_by_index(1)
-    driver.find_element_by_id('goods_code').send_keys(product['상품코드'])
-    driver.find_element_by_id('goods_name').send_keys(product['상품이름'])
+    product_code = product['상품코드']
+    product_name = product['상품이름']
+    if code_prefix:
+        product_code += f'-{code_prefix}'
+        product_name += f'-{code_prefix}'
+    driver.find_element_by_id('goods_code').send_keys(product_code)
+    driver.find_element_by_id('goods_name').send_keys(product_name)
     driver.find_element_by_id('goods_price').send_keys(str(product['소비자단가']))
     driver.find_element_by_id('goods_salesprice').send_keys(
         str(product['판매가']))
@@ -118,6 +128,7 @@ def register_product(product):
         product['진열상품명'])
     driver.find_element_by_id('goods_content_source').send_keys(product['상세설명'])
     driver.find_element_by_id('option1_concat').send_keys(product['색깔'])
+    # 카테고리 입력
     try:
         for category in product['카테고리'].split(','):
             category1, category2, category3 = category.split('>')
@@ -147,20 +158,17 @@ if __name__ == '__main__':
     #     get_category(source)
 
 
-    driver.get(BASE_URL)
-
     # 아이디, 패스워드 입력
     id = input('아이디: ')
     password = input('패스워드: ')
     login(id, password)
-    driver.implicitly_wait(3)
 
     action_type = input('크롤링?상품등록?')
 
     if action_type == '크롤링':
         # 새 탭
-        driver.execute_script(f'window.open("www.google.com");')
-        driver.switch_to.window(driver.window_handles[-1])
+        driver.make_new_tab()
+        driver.switch_to_bat(-1)
 
         data = pd.read_csv('./data/data.csv')
         productIDs = data['품목ID']
@@ -187,7 +195,7 @@ if __name__ == '__main__':
                 product_category = product['카테고리']
                 os.startfile(f'img\\{product_code}')
                 print(f'타입: {product_category}')
-                register_product(product)
+                register_product(product, '68')
             elif select == 'z':
                 if index == 0:
                     continue

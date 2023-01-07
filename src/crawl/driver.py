@@ -36,6 +36,14 @@ class DriverManager():
     
     def close(self):
         self.driver.close()
+        
+    def make_new_tab(self):
+        self.driver.execute_script(f'window.open("www.google.com");')
+    
+    def switch_to_bat(self, index):
+        self.driver.switch_to.window(self.driver.window_handles[index])
+    
+    
     
     @property
     def page_source(self) -> str:
