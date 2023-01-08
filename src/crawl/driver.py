@@ -30,6 +30,11 @@ class DriverManager():
     
     def find_elements_by_class(self, class_name: str):
         return self.driver.find_elements(By.CLASS_NAME, class_name)
+
+    def insert_text_to_element_by_id(self, id: str, text:str):
+        element = self.find_element_by_id(id)
+        if element:
+            element.send_keys(text)
     
     def find_select_element_by_id(self, id: str) -> Select:
         return Select(self.find_element_by_id(id))

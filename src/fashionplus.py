@@ -141,15 +141,13 @@ def register_product(product, code_prefix: str = ''):
         product_code += f'-{code_prefix}'
         product_name += f'-{code_prefix}'
     driver.find_select_element_by_id('seller_id').select_by_index(1)
-    driver.find_element_by_id('goods_code').send_keys(product_code)
-    driver.find_element_by_id('goods_name').send_keys(product_name)
-    driver.find_element_by_id('goods_price').send_keys(str(product['소비자단가']))
-    driver.find_element_by_id('goods_salesprice').send_keys(
-        str(product['판매가']))
-    driver.find_element_by_id('goods_display_name').send_keys(
-        product['진열상품명'])
-    driver.find_element_by_id('goods_content_source').send_keys(product['상세설명'])
-    driver.find_element_by_id('option1_concat').send_keys(product['색깔'])
+    driver.insert_text_to_element_by_id('goods_code', product_code)
+    driver.insert_text_to_element_by_id('goods_name', product_name)
+    driver.insert_text_to_element_by_id('goods_price', str(product['소비자단가']))
+    driver.insert_text_to_element_by_id('goods_salesprice', str(product['판매가']))
+    driver.insert_text_to_element_by_id('goods_display_name', product['진열상품명'])
+    driver.insert_text_to_element_by_id('goods_content_source', product['상세설명'])
+    driver.insert_text_to_element_by_id('option1_concat', product['색깔'])
     try:
         for category in product['카테고리'].split(','):
             category1, category2, category3 = category.split('>')
@@ -203,6 +201,8 @@ if __name__ == '__main__':
         print('products.csv 저장 성공')
     elif action_type == '상품등록':
         data = pd.read_csv('products.csv')
+        products_uploaded = pd.read_csv('./data/data68.csv')
+        products_num_uploaded = map(lambda code: code.split('-')[1], products_uploaded['품목번호']) 
         index = 0
 
         while True:
