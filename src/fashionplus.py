@@ -148,6 +148,7 @@ def action_request_size():
 def register_product(product, code_prefix: str = ''):
     driver.move_to('https://seller.fashionplus.co.kr/goods/create')
 
+    # TODO 진열상품명도 prefix 추가해야 함
     product_code = product['상품코드']
     product_name = product['상품이름']
     if code_prefix:
@@ -201,8 +202,11 @@ def save_history(product):
         '등록날짜': datetime.now()
     }
     try:
+        # TODO 열이 추가되는 문제
+        # TODO 인코딩
+        # TODO 시간 이상하게 나오는 문제 수정
         history: pd.DataFrame = pd.read_csv(file_name)
-        history =history.append(data, ignore_index=True)
+        history = history.append(data, ignore_index=True)
         history.to_csv(file_name)
     except:        
         pd.DataFrame(data, index=[0]).to_csv(file_name)
@@ -273,6 +277,7 @@ if __name__ == '__main__':
             select = input(f'선택: ')
             if select == 'y':
                 action_register_product(product)
+                # TODO 전화번호 입력
                 action_request_size()
                 save_history(product)
             elif select == 'z':
