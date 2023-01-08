@@ -34,6 +34,12 @@ class DriverManager():
     def find_select_element_by_id(self, id: str) -> Select:
         return Select(self.find_element_by_id(id))
     
+    def make_new_tab(self):
+        self.driver.execute_script(f'window.open("www.google.com");')
+        
+    def switch_to_tab(self, index):
+        self.driver.switch_to.window(self.driver.window_handles[index])
+    
     def close(self):
         self.driver.close()
     

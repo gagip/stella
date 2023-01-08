@@ -146,21 +146,17 @@ if __name__ == '__main__':
     #     source = f.read()
     #     get_category(source)
 
-
-    driver.get(BASE_URL)
-
     # 아이디, 패스워드 입력
     id = input('아이디: ')
     password = input('패스워드: ')
     login(id, password)
-    driver.implicitly_wait(3)
 
     action_type = input('크롤링?상품등록?')
 
     if action_type == '크롤링':
         # 새 탭
-        driver.execute_script(f'window.open("www.google.com");')
-        driver.switch_to.window(driver.window_handles[-1])
+        driver.make_new_tab()
+        driver.switch_to_tab(-1)
 
         data = pd.read_csv('./data/data.csv')
         productIDs = data['품목ID']
