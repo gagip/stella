@@ -46,3 +46,7 @@ class DriverManager():
     @property
     def page_source(self) -> str:
         return self.driver.page_source
+
+    @property
+    def url(self) -> str:
+        return self.driver.current_url

@@ -8,6 +8,7 @@ from crawl.driver import DriverManager
 from io import BytesIO
 from PIL import Image
 
+from config import *
 
 BASE_URL = 'https://seller.fashionplus.co.kr/login'
 
@@ -104,13 +105,44 @@ def start_crawling(productIDs):
         save('색깔', product_color)
         save('카테고리', category)
 
+def action_register_product(product):
+    product_code = product['상품코드']
+    product_category = product['카테고리']
+    os.startfile(f'img\\{product_code}')
+    print(f'타입: {product_category}')
+    register_product(product, '68')
+    
+def action_request_size():
+    print('제품을 보고 상품 사이즈를 입력하세요')
+    print(f'- {KEY_MAN_UP_SIZE}: 남자 상의')
+    print(f'- {KEY_MAN_BOTTOM_SIZE}: 남자 하의')
+    print(f'- {KEY_WOMAN_UP_SIZE}: 여자 상의')
+    print(f'- {KEY_WOMAN_BOTTOM_SIZE}: 여자 하의')
+    print(f'- {KEY_HAT_SIZE}: 모자류')
+    print(f'- {KEY_ETC_SIZE}: 악세사리')
+    print(f'- {KEY_QUIT}: 입력하지 않기')
+    while True:
+        user_input = input('입력: ')
+        if not user_input.isdigit: continue
+        user_input = int(user_input)
+        if not user_input in SIZE_DATA_SET.keys(): continue
 
-def register_product(product):
+        size_data = SIZE_DATA_SET[user_input]
+        if not size_data: break
+        insert_size(size_data)
+        break
+
+def register_product(product, code_prefix: str = ''):
     driver.move_to('https://seller.fashionplus.co.kr/goods/create')
 
+    product_code = product['상품코드']
+    product_name = product['상품이름']
+    if code_prefix:
+        product_code += f'-{code_prefix}'
+        product_name += f'-{code_prefix}'
     driver.find_select_element_by_id('seller_id').select_by_index(1)
-    driver.find_element_by_id('goods_code').send_keys(product['상품코드'])
-    driver.find_element_by_id('goods_name').send_keys(product['상품이름'])
+    driver.find_element_by_id('goods_code').send_keys(product_code)
+    driver.find_element_by_id('goods_name').send_keys(product_name)
     driver.find_element_by_id('goods_price').send_keys(str(product['소비자단가']))
     driver.find_element_by_id('goods_salesprice').send_keys(
         str(product['판매가']))
@@ -140,7 +172,12 @@ def register_product(product):
     except:
         pass
 
+def insert_size(size: str):
+    if driver.url != 'https://seller.fashionplus.co.kr/goods/create': 
+        return
 
+    driver.find_element_by_id('option2_concat').send_keys(size)
+    
 if __name__ == '__main__':
     # with open('source.txt', 'r') as f:
     #     source = f.read()
@@ -172,18 +209,17 @@ if __name__ == '__main__':
             product = data.loc[index]
             product_name = product['상품이름']
 
+            print('================================================')
             print(f'상품이름: {product_name}   ({index+1}/{len(data)})')
             print('선택해주세요')
-            print('y: 제품등록')
-            print('z: 이전 상품')
-            print('x: 다음 상품')
+            print('- y: 제품등록')
+            print('- z: 이전 상품')
+            print('- x: 다음 상품')
+            print('- s: 사이즈 입력')
             select = input(f'선택: ')
             if select == 'y':
-                product_code = product['상품코드']
-                product_category = product['카테고리']
-                os.startfile(f'img\\{product_code}')
-                print(f'타입: {product_category}')
-                register_product(product)
+                action_register_product(product)
+                action_request_size()
             elif select == 'z':
                 if index == 0:
                     continue
@@ -192,6 +228,8 @@ if __name__ == '__main__':
                 if index >= len(data) - 1:
                     continue
                 index += 1
+            elif select == 's':
+                action_request_size()
             else:
                 print('잘못된 입력입니다.')
 
