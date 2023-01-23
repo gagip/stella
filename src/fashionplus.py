@@ -1,10 +1,11 @@
 from bs4 import BeautifulSoup as bs
+import bs4.element as bsType
 import os
 import pandas as pd
 import json
 import re
 import requests
-from crawl.driver import DriverManager
+from crawling_gagip import DriverManager
 from io import BytesIO
 from PIL import Image
 from datetime import datetime
@@ -42,6 +43,7 @@ def login(id, password):
 def get_color(source):
     soup = bs(source, features='html.parser')
     table = soup.find('tbody', {'id': 'option_box'})
+    assert isinstance(table, bsType.Tag)
     rows = table.find_all('tr')
     color = [row.find_all('td')[1].find('b').get_text() for row in rows]
     return ','.join(set(color))
@@ -50,6 +52,7 @@ def get_color(source):
 def get_category(source):
     soup = bs(source, features='html.parser')
     category_box = soup.find('dd', {'id': 'selected_category_box'})
+    assert isinstance(category_box, bsType.Tag)
     categorys = category_box.find_all('li')
     category_list = [category.find('span').get_text()
                      for category in categorys]
@@ -58,8 +61,10 @@ def get_category(source):
 
 def save_img(source, product_code):
     soup = bs(source, features='html.parser')
-    file_list = soup.find(
-        'div', {'class': 'mm_image-list'}).attrs['data-filelist']
+    image_list = soup.find(
+        'div', {'class': 'mm_image-list'})
+    assert isinstance(image_list, bsType.Tag)
+    file_list = image_list.attrs['data-filelist']
     json_object = json.loads(file_list.replace("\'", "\""))
     urls = json_object['items']
     urls = map(lambda url: url.split('?')[0], urls)
@@ -158,15 +163,13 @@ def register_product(product, code_prefix: str = ''):
         product_code += f'-{code_prefix}'
         product_name += f'-{code_prefix}'
     driver.find_select_element_by_id('seller_id').select_by_index(1)
-    driver.insert_text_to_element_by_id('goods_code', product_code)
-    driver.insert_text_to_element_by_id('goods_name', product_name)
-    driver.insert_text_to_element_by_id('goods_price', str(product['소비자단가']))
-    driver.insert_text_to_element_by_id(
-        'goods_salesprice', str(product['판매가']))
-    driver.insert_text_to_element_by_id('goods_display_name', product['진열상품명'])
-    driver.insert_text_to_element_by_id(
-        'goods_content_source', product['상세설명'])
-    driver.insert_text_to_element_by_id('option1_concat', product['색깔'])
+    driver.find_element_by_id('goods_code').send_keys(product_code)
+    driver.find_element_by_id('goods_name').send_keys(product_name)
+    driver.find_element_by_id('goods_price').send_keys(str(product['소비자단가']))
+    driver.find_element_by_id('goods_salesprice').send_keys(str(product['판매가']))
+    driver.find_element_by_id('goods_display_name').send_keys(product['진열상품명'])
+    driver.find_element_by_id('goods_content_source').send_keys(product['상세설명'])
+    driver.find_element_by_id('option1_concat').send_keys(product['색깔'])
     try:
         for category in product['카테고리'].split(','):
             category1, category2, category3 = category.split('>')

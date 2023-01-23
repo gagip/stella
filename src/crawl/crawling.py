@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup as bs
 import os
 import pandas as pd
-from driver import DriverManager
+from crawling_gagip import DriverManager
 
 from utils import *
 from config import *
