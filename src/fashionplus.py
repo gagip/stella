@@ -7,9 +7,9 @@ import requests
 from crawl.driver import DriverManager
 from io import BytesIO
 from PIL import Image
+from datetime import datetime
 
 from config import *
-
 
 BASE_URL = 'https://seller.fashionplus.co.kr/login'
 
@@ -81,14 +81,20 @@ def save_img(source, product_code):
 
 def start_crawling(productIDs):
     for productID in productIDs:
-        driver.move_to(f'https://seller.fashionplus.co.kr/goods/edit/{productID}')
+        driver.move_to(
+            f'https://seller.fashionplus.co.kr/goods/edit/{productID}')
 
         # 요소 추출
-        product_code = driver.find_element_by_id('goods_code').get_attribute('value')
-        product_name = driver.find_element_by_id('goods_name').get_attribute('value')
-        goods_price = driver.find_element_by_id('goods_price').get_attribute('value')
-        goods_salesprice = driver.find_element_by_id('goods_salesprice').get_attribute('value')
-        goods_display_name = driver.find_element_by_id('goods_display_name').get_attribute('value')
+        product_code = driver.find_element_by_id(
+            'goods_code').get_attribute('value')
+        product_name = driver.find_element_by_id(
+            'goods_name').get_attribute('value')
+        goods_price = driver.find_element_by_id(
+            'goods_price').get_attribute('value')
+        goods_salesprice = driver.find_element_by_id(
+            'goods_salesprice').get_attribute('value')
+        goods_display_name = driver.find_element_by_id(
+            'goods_display_name').get_attribute('value')
         goods_content = driver.find_element_by_id('goods_content_source').text
         category = get_category(driver.page_source)
         product_color = get_color(driver.page_source)
@@ -110,25 +116,57 @@ def start_crawling(productIDs):
         save('카테고리', category)
 
 
+def action_register_product(product):
+    product_code = product['상품코드']
+    product_category = product['카테고리']
+    os.startfile(f'img\\{product_code}')
+    print(f'타입: {product_category}')
+    register_product(product, '68')
+
+
+def action_request_size():
+    print('제품을 보고 상품 사이즈를 입력하세요')
+    print(f'- {KEY_MAN_UP_SIZE}: 남자 상의')
+    print(f'- {KEY_MAN_BOTTOM_SIZE}: 남자 하의')
+    print(f'- {KEY_WOMAN_UP_SIZE}: 여자 상의')
+    print(f'- {KEY_WOMAN_BOTTOM_SIZE}: 여자 하의')
+    print(f'- {KEY_HAT_SIZE}: 모자류')
+    print(f'- {KEY_ETC_SIZE}: 악세사리')
+    print(f'- {KEY_QUIT}: 입력하지 않기')
+    while True:
+        user_input = input('입력: ')
+        if not user_input.isdigit:
+            continue
+        user_input = int(user_input)
+        if not user_input in SIZE_DATA_SET.keys():
+            continue
+
+        size_data = SIZE_DATA_SET[user_input]
+        if not size_data:
+            break
+        insert_size(size_data)
+        break
+
+
 def register_product(product, code_prefix: str = ''):
     driver.move_to('https://seller.fashionplus.co.kr/goods/create')
 
-    driver.find_select_element_by_id('seller_id').select_by_index(1)
+    # TODO 진열상품명도 prefix 추가해야 함
     product_code = product['상품코드']
     product_name = product['상품이름']
     if code_prefix:
         product_code += f'-{code_prefix}'
         product_name += f'-{code_prefix}'
-    driver.find_element_by_id('goods_code').send_keys(product_code)
-    driver.find_element_by_id('goods_name').send_keys(product_name)
-    driver.find_element_by_id('goods_price').send_keys(str(product['소비자단가']))
-    driver.find_element_by_id('goods_salesprice').send_keys(
-        str(product['판매가']))
-    driver.find_element_by_id('goods_display_name').send_keys(
-        product['진열상품명'])
-    driver.find_element_by_id('goods_content_source').send_keys(product['상세설명'])
-    driver.find_element_by_id('option1_concat').send_keys(product['색깔'])
-    # 카테고리 입력
+    driver.find_select_element_by_id('seller_id').select_by_index(1)
+    driver.insert_text_to_element_by_id('goods_code', product_code)
+    driver.insert_text_to_element_by_id('goods_name', product_name)
+    driver.insert_text_to_element_by_id('goods_price', str(product['소비자단가']))
+    driver.insert_text_to_element_by_id(
+        'goods_salesprice', str(product['판매가']))
+    driver.insert_text_to_element_by_id('goods_display_name', product['진열상품명'])
+    driver.insert_text_to_element_by_id(
+        'goods_content_source', product['상세설명'])
+    driver.insert_text_to_element_by_id('option1_concat', product['색깔'])
     try:
         for category in product['카테고리'].split(','):
             category1, category2, category3 = category.split('>')
@@ -152,11 +190,35 @@ def register_product(product, code_prefix: str = ''):
         pass
 
 
+def insert_size(size: str):
+    if driver.url != 'https://seller.fashionplus.co.kr/goods/create':
+        return
+
+    driver.find_element_by_id('option2_concat').send_keys(size)
+
+
+def save_history(product):
+    file_name = 'history.csv'
+    data = {
+        '상품코드': product['상품코드'],
+        '상품이름': product['상품이름'],
+        '등록날짜': datetime.now()
+    }
+    try:
+        # TODO 열이 추가되는 문제
+        # TODO 인코딩
+        # TODO 시간 이상하게 나오는 문제 수정
+        history: pd.DataFrame = pd.read_csv(file_name)
+        history = history.append(data, ignore_index=True)
+        history.to_csv(file_name)
+    except:        
+        pd.DataFrame(data, index=[0]).to_csv(file_name)
+
+
 if __name__ == '__main__':
     # with open('source.txt', 'r') as f:
     #     source = f.read()
     #     get_category(source)
-
 
     # 아이디, 패스워드 입력
     id = input('아이디: ')
@@ -168,7 +230,7 @@ if __name__ == '__main__':
     if action_type == '크롤링':
         # 새 탭
         driver.make_new_tab()
-        driver.switch_to_bat(-1)
+        driver.switch_to_tab(-1)
 
         data = pd.read_csv('./data/data.csv')
         productIDs = data['품목ID']
@@ -178,24 +240,49 @@ if __name__ == '__main__':
         print('products.csv 저장 성공')
     elif action_type == '상품등록':
         data = pd.read_csv('products.csv')
+        # 중복 데이터 제거
+        try:
+            products_uploaded = pd.read_csv('./data/data68.csv')
+            products_num_uploaded = map(lambda code: code.split(
+                '_')[1].split('-')[0], products_uploaded['품목번호'])
+            products_num_not_uploaded = set.difference(
+                set(map(lambda s: s[:7], data['상품코드'])),
+                set(products_num_uploaded))
+            unique_products = data['상품코드'].map(lambda x: any(
+                string in x for string in products_num_not_uploaded))
+            print('아래와 같은 상품들이 제외되었습니다. (사유: 중복 코드)')
+            print(data[~unique_products]['상품코드'])
+            data = data[unique_products]
+            data = data.reset_index()
+        except:
+            print('중복 데이터 로직 검증 실패')
+            pass
         index = 0
 
         while True:
             product = data.loc[index]
             product_name = product['상품이름']
-
-            print(f'상품이름: {product_name}   ({index+1}/{len(data)})')
+            is_history = False
+            try:
+                history = pd.read_csv('history.csv')
+                is_history = any(history['상품코드'].isin([product['상품코드']]))
+            except:
+                pass
+            
+            str_is_history = 'O' if is_history else 'X'
+            print('================================================')
+            print(f'상품이름: {product_name}   ({index+1}/{len(data)})     ({str_is_history})')
             print('선택해주세요')
-            print('y: 제품등록')
-            print('z: 이전 상품')
-            print('x: 다음 상품')
+            print('- y: 제품등록')
+            print('- z: 이전 상품')
+            print('- x: 다음 상품')
+            print('- s: 사이즈 입력')
             select = input(f'선택: ')
             if select == 'y':
-                product_code = product['상품코드']
-                product_category = product['카테고리']
-                os.startfile(f'img\\{product_code}')
-                print(f'타입: {product_category}')
-                register_product(product, '68')
+                action_register_product(product)
+                # TODO 전화번호 입력
+                action_request_size()
+                save_history(product)
             elif select == 'z':
                 if index == 0:
                     continue
@@ -204,6 +291,8 @@ if __name__ == '__main__':
                 if index >= len(data) - 1:
                     continue
                 index += 1
+            elif select == 's':
+                action_request_size()
             else:
                 print('잘못된 입력입니다.')
 
