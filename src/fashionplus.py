@@ -12,6 +12,14 @@ from datetime import datetime
 
 from config import *
 
+'''
+패션 피플 SCM 관리자 페이지 제어
+- 로그인
+- 기존 상품 크롤링
+- 상품 등록 매핑
+'''
+
+
 BASE_URL = 'https://seller.fashionplus.co.kr/login'
 
 

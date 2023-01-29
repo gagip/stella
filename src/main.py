@@ -1,5 +1,4 @@
-import crawl
-from crawl.crawling import CrawlingManager
+from crawl import *
 
 from config import *
 
