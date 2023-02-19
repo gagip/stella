@@ -7,6 +7,7 @@ import requests
 import webbrowser
 import clipboard
 from plyer import notification
+from collections import defaultdict
 
 from utils import *
 from config import *
@@ -31,7 +32,11 @@ class WindowClass(QMainWindow, form_class):
         self.imageIinkButton1.clicked.connect(self.copyImageLink1)
         self.imageIinkButton2.clicked.connect(self.copyImageLink2)
         self.imageIinkButton3.clicked.connect(self.copyImageLink3)
-
+        self.manTopButton.clicked.connect(lambda: self.copySize(KEY_MAN_UP_SIZE))
+        self.manBottomButton.clicked.connect(lambda: self.copySize(KEY_MAN_BOTTOM_SIZE))
+        self.womanTopButton.clicked.connect(lambda: self.copySize(KEY_WOMAN_UP_SIZE))
+        self.womanBottomButton.clicked.connect(lambda: self.copySize(KEY_WOMAN_BOTTOM_SIZE))
+        self.hatButton.clicked.connect(lambda: self.copySize(KEY_HAT_SIZE))
         self.show_info(self.index)
 
     def show_info(self, index):
@@ -91,6 +96,16 @@ class WindowClass(QMainWindow, form_class):
             title='이미지3 링크 복사 성공',
             message='링크를 복사했습니다. ctrl+v로 붙여넣기 가능합니다.',
         )
+        
+    def copySize(self, key: int):
+        size_data_set = defaultdict(lambda: '', SIZE_DATA_SET)
+        size = size_data_set[key]
+        clipboard.copy(size)
+        notification.notify(
+            title='사이즈 복사',
+            message='링크를 복사했습니다. ctrl+v로 붙여넣기 가능합니다.',
+        )
+
 
 
 if __name__ == "__main__":
