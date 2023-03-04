@@ -3,6 +3,7 @@ DEFAULT_SEARCH_KEYWORD = '6i7'
 DEFAULT_START_PAGE = 1
 DEFAULT_END_PAGE = 5
 
+# 엑셀 열 이름
 KEY_TITLE = 'title'
 KEY_LINK = 'link'
 KEY_PRODUCT_NAME = 'product_name'
@@ -12,6 +13,7 @@ KEY_SALE_PRICE = 'sale_price'
 KEY_IMAGE_LINK = 'image'
 KEY_COLORS = 'color'
 KEY_DETAIL_IMAGES_LINK = 'detail_image'
+
 
 KEY_MAN_UP_SIZE = 1
 KEY_MAN_BOTTOM_SIZE = 2

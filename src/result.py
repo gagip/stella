@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import *
+from PyQt5.QtCore import Qt
 import pandas as pd
 import requests
 import webbrowser
@@ -37,6 +38,8 @@ class WindowClass(QMainWindow, form_class):
         self.womanTopButton.clicked.connect(lambda: self.copySize(KEY_WOMAN_UP_SIZE))
         self.womanBottomButton.clicked.connect(lambda: self.copySize(KEY_WOMAN_BOTTOM_SIZE))
         self.hatButton.clicked.connect(lambda: self.copySize(KEY_HAT_SIZE))
+        self.checkBoxComplete.stateChanged.connect(self.complete_job)
+        self.progressSheetButton.clicked.connect(self.move_progress_sheet)
         self.show_info(self.index)
 
     def show_info(self, index):
@@ -106,7 +109,16 @@ class WindowClass(QMainWindow, form_class):
             message='링크를 복사했습니다. ctrl+v로 붙여넣기 가능합니다.',
         )
 
-
+    def move_progress_sheet(self):
+        """ 구글 스프레드시트로 이동 """
+        pass
+    
+    def complete_job(self, state):
+        """ 작업 완료 시 이벤트 처리 """
+        is_complete = state == Qt.CheckState.Checked
+        
+        print(is_complete)
+        pass
 
 if __name__ == "__main__":
     use_file_name = input(f'엑셀 파일 이름 (default: {DEFAULT_SEARCH_KEYWORD}): ')
