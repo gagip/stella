@@ -1,14 +1,15 @@
 <div class="container">
-  <form>
-    <div class="mb-3">
-      <label for="exampleInputEmail1" class="form-label">추적 키워드</label>
-      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+  <form id="crawling-form">
+    <div class="form-group mb-3">
+      <label for="crawling-keyword" class="form-label">추적 키워드</label>
+      <input type="text" class="form-control" id="crawling-keyword" name="keyword">
+      <div id="emailHelp" class="form-text"><a href="{{ base_url }}">{{ base_url }}</a>을 기반으로 크롤링을 시작합니다.</div>
     </div>
     
     <div class="text-center">
-      <p>로딩중...</p>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <p class="crawling__state">로딩중...</p>
+      <button type="submit" class="btn btn-primary" id="crawling-submit">크롤링 시작</button>
     </div>
   </form>
 </div>
+

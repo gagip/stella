@@ -2,9 +2,10 @@ from bs4 import BeautifulSoup as bs
 import os
 import pandas as pd
 from crawling_gagip import DriverManager
+from typing import Callable, Optional, Any
 
-from utils import *
-from config import *
+from ..utils import *
+from ..config import *
 
 
 class CrawlingManager():
@@ -13,12 +14,17 @@ class CrawlingManager():
     """
 
     def __init__(self, base_url: str, search_keyword: str, hidden_browser_option: bool):
-        self.driver = DriverManager(base_url, hidden_browser_option=hidden_browser_option)
+        self.driver = DriverManager(
+            base_url, hidden_browser_option=hidden_browser_option)
         self.base_url = base_url
         self.search_keyword = search_keyword
         self.data = {}
 
-    def start_crawling(self, start_page=1, end_page=99):
+    def start_crawling(
+            self,
+            start_page=1,
+            end_page=99,
+            progress_callback: Optional[Callable[[str], Any]] = None):
         try:
             for page in range(start_page, end_page+1):
                 print(f'페이지#{page} 진행 중...')
@@ -31,9 +37,11 @@ class CrawlingManager():
 
                 for idx, product in enumerate(products):
                     info = self.__get_common_info(product)
-                    print(
-                        f'페이지#{page} {idx+1}/{products_size}: {info[KEY_TITLE]}'
-                    )
+                    
+                    msg = f'페이지#{page} {idx+1}/{products_size}: {info[KEY_TITLE]}'
+                    if progress_callback:
+                        progress_callback(msg)
+                    print(msg)
 
                     # 상품 세부 항목으로 이동
                     detail_soup = self.__move_to(info[KEY_LINK], wait_time=3)
@@ -43,10 +51,14 @@ class CrawlingManager():
 
                     self.__save_info(info)
         except Exception as e:
-            print(e)
-            print('크롤링 도중 문제가 생겼습니다.')
+            error_msg = f'크롤링 도중 문제가 생겼습니다. {e}'
+            if progress_callback:
+                progress_callback(error_msg)
+            print(error_msg)
 
         self.driver.close()
+        if progress_callback:
+            progress_callback('크롤링 종료')
         print('크롤링 종료')
 
     def save_csv(self, dir_name):
