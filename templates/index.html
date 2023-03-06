@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>페이지</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+</head>
+
+<body>
+  {% include 'header.html' %}
+
+  <!-- 탭 메뉴 -->
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="data-lab" role="tabpanel">{% include 'data-lab.html' %}</div>
+    <div class="tab-pane fade" id="data-crawling" role="tabpanel">{% include 'data-crawling.html' %}</div>
+    <div class="tab-pane fade" id="products">{% include 'products.html' %}</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>
